@@ -7,7 +7,7 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 a {
-    color: #21cfbd;
+    color: #21a2cf;
 }
 .dark-mode {
     background-color: #121212;
@@ -22,10 +22,13 @@ a {
     width: 100%;
     max-width: 800px;
 }
+.extensions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+    padding: 20px;
+}
 .extension {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     width: 100%;
     padding: 15px 0;
     max-width: 550px;
