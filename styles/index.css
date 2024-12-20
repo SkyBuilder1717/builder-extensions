@@ -32,6 +32,7 @@ a {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    padding: 15px 0;
     max-width: 550px;
 }
 .extension img {
@@ -41,7 +42,8 @@ a {
     border-radius: 15px;
 }
 .extension:hover {
-    transform: scale(1.02, 0.3s);
+    transition: transform 0.5s;
+    transform: scale(1.05);
 }
 .theme-toggle {
     margin-bottom: 20px;
