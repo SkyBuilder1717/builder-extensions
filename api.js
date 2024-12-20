@@ -21,7 +21,7 @@ extensions.forEach(extension => {
         text = `Author: ${extension.author}`;
     }
     const author = document.createElement('p');
-    author.text = text;
+    author.innerHTML = text;
     div.appendChild(author);
     container.appendChild(div);
 });
