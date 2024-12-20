@@ -14,6 +14,11 @@ h1 {
     text-align: center;
     color: #4783ff;
 }
+.extensions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .extension {
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -25,6 +30,9 @@ h1 {
 .dark-mode .extension {
     background-color: #1e1e1e;
     border-color: #444;
+}
+.extension img {
+    width: 500px;
 }
 .extension:hover {
     transform: scale(1.02);
