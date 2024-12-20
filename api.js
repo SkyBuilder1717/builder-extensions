@@ -1,5 +1,6 @@
 const extensions = [
-    {id: "Geometry_Dash_Tools", name: "Geometry Dash Tools", author: "SkyBuilder1717", link: "https://scratch.mit.edu/users/SkyBuilder1717/"}
+    {id: "Geometry_Dash_Tools", name: "Geometry Dash Tools", author: "SkyBuilder1717", link: "https://scratch.mit.edu/users/SkyBuilder1717/"},
+    {id: "Geometry_Dash_Tools", name: "Geometry Dash Tools", author: "SkyBuilder1717", link: "https://scratch.mit.edu/users/SkyBuilder1717/"},
 ];
 
 const container = document.getElementById('extensions');
@@ -7,22 +8,20 @@ const container = document.getElementById('extensions');
 extensions.forEach(extension => {
     const div = document.createElement('div');
     div.classList.add('extension');
-    let text = `<h3>${extension.name}</h3>`;
-    div.innerHTML = text;
     const downloadButton = document.createElement('img');
     downloadButton.src = `/extensions/${extension.id}.png`;
     downloadButton.style.cursor = "pointer";
     const downloadUrl = `/extensions/${extension.id}.js`;
     downloadButton.onclick = () => downloadExtension(downloadUrl);
     div.appendChild(downloadButton);
+    let text = `<h3>${extension.name}</h3>`;
     if (extension.link) {
-        text = `Author: <a href="${extension.link}">${extension.author}</a>`;
+        text += `Author: <a href="${extension.link}">${extension.author}</a>`;
     } else {
-        text = `Author: ${extension.author}`;
+        text += `Author: ${extension.author}`;
     }
     const author = document.createElement('p');
-    author.innerHTML = text;
-    div.appendChild(author);
+    div.innerHTML = text;
     container.appendChild(div);
 });
 
