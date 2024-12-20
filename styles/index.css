@@ -23,15 +23,18 @@ a {
     max-width: 800px;
 }
 .extensions {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 20px;
-    padding: 20px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 .extension {
+    display: inline-block;
     width: 100%;
-    padding: 15px 0;
-    max-width: 550px;
+    padding: 25px;
+    max-width: 500px;
+    transition: transform 0.5s;
+    transform: scale(1.0);
 }
 .extension img {
     width: 100%;
