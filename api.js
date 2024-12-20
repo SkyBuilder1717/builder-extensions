@@ -41,7 +41,7 @@ const modeDark = '<img src="/img/moon.png" />';
 
 if (darkMode) {
     document.body.classList.add('dark-mode');
-    toggleButton.innerText = modeLight;
+    toggleButton.innerHTML = modeLight;
 }
 
 toggleButton.onclick = () => {
