@@ -16,11 +16,10 @@ extensions.forEach(extension => {
     div.appendChild(downloadButton);
     let text = `<h3>${extension.name}</h3>`;
     if (extension.link) {
-        text += `Author: <a href="${extension.link}">${extension.author}</a>`;
+        text += `<p>Author: <a href="${extension.link}">${extension.author}</a></p>`;
     } else {
-        text += `Author: ${extension.author}`;
+        text += `<p>Author: ${extension.author}</p>`;
     }
-    const author = document.createElement('p');
     div.innerHTML = text;
     container.appendChild(div);
 });
