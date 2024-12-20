@@ -36,9 +36,17 @@ function downloadExtension(url) {
 
 let darkMode = localStorage.getItem('darkMode') === 'true';
 const toggleButton = document.getElementById('toggle-theme');
+const modeLight = '<img src="/img/sun.png" />';
+const modeDark = '<img src="/img/moon.png" />';
+
+if (darkMode) {
+    document.body.classList.add('dark-mode');
+    toggleButton.innerText = modeLight;
+}
+
 toggleButton.onclick = () => {
     darkMode = !darkMode;
     document.body.classList.toggle('dark-mode');
-    toggleButton.innerHTML = document.body.classList.contains('dark-mode') ? '<img src="/img/moon.png" />' : '<img src="/img/sun.png" />';
+    toggleButton.innerHTML = document.body.classList.contains('dark-mode') ? modeLight : modeDark;
     localStorage.setItem('darkMode', darkMode);
 };
