@@ -7,7 +7,7 @@ const container = document.getElementById('extensions');
 extensions.forEach(extension => {
     const div = document.createElement('div');
     div.classList.add('extension');
-    const text = `<h3>${extension.name}</h3>`;
+    let text = `<h3>${extension.name}</h3>`;
     if (extension.link) {
         text = text + `<p>Author: <a href="${extension.link}">${extension.author}</a></p>`;
     } else {
