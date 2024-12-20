@@ -17,7 +17,6 @@ extensions.forEach(extension => {
     div.classList.add('extension');
     const downloadButton = document.createElement('img');
     downloadButton.src = `/extensions/${extension.id}.png`;
-    downloadButton.style.cursor = "pointer";
     const downloadUrl = `/extensions/${extension.id}.js`;
     downloadButton.onclick = () => downloadExtension(downloadUrl);
     div.appendChild(downloadButton);
