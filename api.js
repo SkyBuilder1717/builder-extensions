@@ -14,6 +14,7 @@ extensions.forEach(extension => {
     downloadButton.style.cursor = "pointer";
     const downloadUrl = `/extensions/${extension.id}.js`;
     downloadButton.onclick = () => downloadExtension(downloadUrl);
+    div.appendChild(downloadButton);
     if (extension.link) {
         text = `Author: <a href="${extension.link}">${extension.author}</a>`;
     } else {
@@ -21,7 +22,7 @@ extensions.forEach(extension => {
     }
     const author = document.createElement('p');
     author.text = text;
-    div.appendChild(downloadButton);
+    div.appendChild(author);
     container.appendChild(div);
 });
 
