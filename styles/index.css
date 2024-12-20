@@ -33,15 +33,6 @@ a {
     align-items: center;
     width: 100%;
     max-width: 550px;
-    border: 1px solid none;
-    background-color: none;
-    padding: 10px;
-    margin: 10px 0;
-    transition: transform 0.2s;
-}
-.dark-mode .extension {
-    background-color: #1e1e1e;
-    border-color: #444;
 }
 .extension img {
     width: 100%;
