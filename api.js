@@ -32,3 +32,9 @@ function downloadExtension(url) {
     link.click();
     document.body.removeChild(link);
 }
+
+const toggleButton = document.getElementById('toggle-theme');
+toggleButton.onclick = () => {
+    document.body.classList.toggle('dark-mode');
+    toggleButton.innerText = document.body.classList.contains('dark-mode') ? '<img src="/img/light.png" />' : '<img src="/img/dark.png" />';
+};
