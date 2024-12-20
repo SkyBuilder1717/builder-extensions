@@ -14,13 +14,6 @@ extensions.forEach(extension => {
     const downloadUrl = `/extensions/${extension.id}.js`;
     downloadButton.onclick = () => downloadExtension(downloadUrl);
     div.appendChild(downloadButton);
-    let text = `<h3>${extension.name}</h3>`;
-    if (extension.link) {
-        text += `<p>Author: <a href="${extension.link}">${extension.author}</a></p>`;
-    } else {
-        text += `<p>Author: ${extension.author}</p>`;
-    }
-    div.innerHTML = text;
     container.appendChild(div);
 });
 
@@ -40,12 +33,12 @@ const modeDark = '<img src="/img/moon.png" />';
 
 if (darkMode) {
     document.body.classList.add('dark-mode');
-    toggleButton.innerHTML = modeLight;
+    toggleButton.innerHTML = modeDark;
 }
 
 toggleButton.onclick = () => {
     darkMode = !darkMode;
     document.body.classList.toggle('dark-mode');
-    toggleButton.innerHTML = document.body.classList.contains('dark-mode') ? modeLight : modeDark;
+    toggleButton.innerHTML = document.body.classList.contains('dark-mode') ? modeDark : modeLight;
     localStorage.setItem('darkMode', darkMode);
 };
