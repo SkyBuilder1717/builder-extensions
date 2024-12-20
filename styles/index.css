@@ -13,10 +13,6 @@ a {
     background-color: #121212;
     color: #ffffff;
 }
-h1 {
-    text-align: center;
-    color: #4783ff;
-}
 .banner {
     display: flex;
     flex-direction: column;
