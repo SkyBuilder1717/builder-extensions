@@ -36,5 +36,5 @@ function downloadExtension(url) {
 const toggleButton = document.getElementById('toggle-theme');
 toggleButton.onclick = () => {
     document.body.classList.toggle('dark-mode');
-    toggleButton.innerHTML = document.body.classList.contains('dark-mode') ? '<img src="/img/sun.png" />' : '<img src="/img/moon.png" />';
+    toggleButton.innerHTML = document.body.classList.contains('dark-mode') ? '<img src="/img/moon.png" />' : '<img src="/img/sun.png" />';
 };
