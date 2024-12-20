@@ -9,18 +9,18 @@ extensions.forEach(extension => {
     div.classList.add('extension');
     let text = `<h3>${extension.name}</h3>`;
     div.innerHTML = text;
-    if (extension.link) {
-        text = `<p>Author: <a href="${extension.link}">${extension.author}</a></p>`;
-    } else {
-        text = `<p>Author: ${extension.author}</p>`;
-    }
     const downloadButton = document.createElement('img');
     downloadButton.src = `/extensions/${extension.id}.png`;
-    downloadButton.alt = `Download ${extension.name}`;
     downloadButton.style.cursor = "pointer";
     const downloadUrl = `/extensions/${extension.id}.js`;
     downloadButton.onclick = () => downloadExtension(downloadUrl);
-    div.innerHTML = div.innerHTML + text;
+    if (extension.link) {
+        text = `Author: <a href="${extension.link}">${extension.author}</a>`;
+    } else {
+        text = `Author: ${extension.author}`;
+    }
+    const author = document.createElement('p');
+    author.text = text;
     div.appendChild(downloadButton);
     container.appendChild(div);
 });
