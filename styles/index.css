@@ -41,7 +41,7 @@ a {
     border-radius: 15px;
 }
 .extension:hover {
-    transform: scale(1.02);
+    transform: scale(1.02) 0.3s;
 }
 .theme-toggle {
     margin-bottom: 20px;
