@@ -42,6 +42,7 @@ a {
 .extension:hover {
     transition: transform 0.5s;
     transform: scale(1.05);
+    cursor: pointer;
 }
 .theme-toggle {
     margin-bottom: 20px;
