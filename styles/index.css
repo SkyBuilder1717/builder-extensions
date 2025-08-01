@@ -83,6 +83,11 @@ a {
     max-width: 90vw;
     box-sizing: border-box;
 }
+.menu p, .menu h3 {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
 .menu .buttons {
     display: flex;
     flex-wrap: wrap;
