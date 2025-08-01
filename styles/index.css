@@ -72,9 +72,6 @@ a {
 }
 .menu {
     position: fixed;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -83,18 +80,39 @@ a {
     border-radius: 15px;
     padding: 15px 15px 25px 15px;
     color: white;
+    max-width: 90vw;
+    box-sizing: border-box;
 }
-
-.menu a[id="button"] {
-    text-decoration: none;
-    color: white;
+.menu .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;/
+}
+.menu .button {
+    white-space: nowrap;
+    flex: 1 1 120px;
     background-color: #004b79;  
     border-radius: 5px;
     margin-top: 15px;
-    margin-right: 15px;
     padding: 10px 15px;
+    box-sizing: border-box;
+    text-align: center;
 }
-
-.menu a[name="close"] {
+.menu .button a {
+    text-decoration: none;
+    color: white;
+    display: block;
+}
+.menu .button[id="close"] {
     background-color: #790016;
+    padding: 10px 20px 10px 15px;
+}
+@media (max-width: 480px) {
+    .menu .button {
+        flex: 1 1 100%;
+        margin-top: 10px;
+        margin-right: 0;
+    }
 }

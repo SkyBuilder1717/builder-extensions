@@ -1,7 +1,9 @@
-const extensions = [
-    {id: "GeometryDashTools", name: "Geometry Dash Tools", description: "Adds some utilities to manage Geometry Dash Browser", author: "SkyBuilder1717", link: "https://scratch.mit.edu/users/SkyBuilder1717/"},
-    {id: "Sparrow", name: "Sparrow", description: "Adds support for Sparrow V2 spritesheet Adobe Animate export format", author: "SkyBuilder1717", link: "https://scratch.mit.edu/users/SkyBuilder1717/"}
-];
+let extensions = [];
+
+let xmlHttp = new XMLHttpRequest();
+xmlHttp.open("GET", '/extensions-list.json', false);
+xmlHttp.send(null);
+extensions = JSON.parse(xmlHttp.responseText);
 
 const container = document.getElementsByClassName('extensions')[0];
 
@@ -22,7 +24,9 @@ async function findImage(baseUrl, baseName) {
   return null;
 }
 
-extensions.forEach(extension => {
+for (let i = 0; i < extensions.length; i++) {
+    const extension = extensions[i];
+
     const div = document.createElement('div');
     div.classList.add('extension');
     const openMenuButton = document.createElement('img');
@@ -54,32 +58,42 @@ extensions.forEach(extension => {
         by.appendChild(author);
         menu.appendChild(by);
 
+        const buttons = document.createElement('div');
+        buttons.classList.add('buttons');
+
+        const closeDiv = document.createElement('div');
+        closeDiv.classList.add('button');
+        closeDiv.id = "close";
         const close = document.createElement('a');
-        close.id = "button";
-        close.name = "close";
         close.textContent = "Close menu";
         close.onclick = () => {
             document.body.removeChild(menu);
         }
-        menu.appendChild(close);
+        closeDiv.appendChild(close);
+        buttons.appendChild(closeDiv);
 
+        const copyBtn = document.createElement('div');
+        copyBtn.classList.add('button');
         const copy = document.createElement('a');
-        copy.id = "button";
-        copy.name = "copy";
         copy.textContent = "Copy URL";
         copy.onclick = () => {
             navigator.clipboard.writeText(`https://skybuilder-extensions.vercel.app/extensions/${extension.id}.js`);
             copy.textContent = "Copied!"
-            menu.appendChild(copy);
+            copyBtn.appendChild(copy);
+            buttons.appendChild(copyBtn);
+            menu.appendChild(buttons);
             document.body.appendChild(menu);
         }
-        menu.appendChild(copy);
+        copyBtn.appendChild(copy);
+        buttons.appendChild(copyBtn);
+
+        menu.appendChild(buttons);
 
         document.body.appendChild(menu);
     };
     div.appendChild(openMenuButton);
     container.appendChild(div);
-});
+}
 
 function downloadExtension(url) {
     const link = document.createElement('a');
