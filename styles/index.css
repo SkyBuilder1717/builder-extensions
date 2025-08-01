@@ -31,16 +31,20 @@ a {
 }
 .extension {
     display: inline-block;
-    width: 100%;
     padding: 25px;
-    max-width: 300px;
+    width: 300px;
+    height: auto;
     transition: transform 0.5s;
     transform: scale(1.0);
+    overflow: hidden;
 }
 .extension img {
-    width: 100%;
-    min-width: 250px;
+    display: block;
+    width: auto;
+    height: auto;
     max-width: 300px;
+    max-height: 150px;
+    object-fit: cover;
     cursor: pointer;
     border-radius: 15px;
 }
