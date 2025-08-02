@@ -7,7 +7,7 @@ body {
     transition: background-color 0.1s, color 0.1s;
 }
 a {
-    color: #21a2cf;
+    color: #3ab8e6;
     cursor: pointer;
 }
 .dark-mode {
@@ -117,6 +117,14 @@ a {
 .menu .button[id="close"] {
     background-color: #790016;
     padding: 10px 20px 10px 15px;
+}
+.footer {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+.footer a {
+    display: inline-block;
 }
 @media (max-width: 480px) {
     .menu .button {
