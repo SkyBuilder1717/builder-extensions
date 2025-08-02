@@ -228,6 +228,17 @@
         return { base64: canvas.toDataURL('image/png'), frames: frames };
     }
 
+    function _getPixelHash(canvas, ctx) {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+        let hash = 0;
+        for (let i = 0; i < pixels.length; i++) {
+            hash = ((hash << 5) - hash) + pixels[i];
+            hash |= 0;
+        }
+        return (hash >>> 0).toString(16);
+    }
+
     class SparrowExtension {
         getInfo() {
             return {
@@ -522,17 +533,20 @@
                         frameX: st.hasAttribute("frameX") ? parseInt(st.getAttribute("frameX")) : 0,
                         frameY: st.hasAttribute("frameY") ? parseInt(st.getAttribute("frameY")) : 0,
                         frameWidth: st.hasAttribute("frameWidth") ? parseInt(st.getAttribute("frameWidth")) : parseInt(st.getAttribute("width")),
-                        frameHeight: st.hasAttribute("frameHeight") ? parseInt(st.getAttribute("frameHeight")) : parseInt(st.getAttribute("height"))
+                        frameHeight: st.hasAttribute("frameHeight") ? parseInt(st.getAttribute("frameHeight")) : parseInt(st.getAttribute("height")),
+                        rotated: st.hasAttribute("rotated") ? (st.getAttribute("rotated") === "true" || st.getAttribute("rotated") === "1") : false
                     });
                 }
 
                 if (!frames || frames.length === 0) {
                     throw new Error("frames are empty");
                 }
-                
+
                 const imgLoad = await imgLoadPromise;
 
                 const skins = {};
+                const pixelHashes = new Map();
+
                 for (let i = 0; i < frames.length; i++) {
                     const image = frames[i];
                     if (!image) {
@@ -549,12 +563,34 @@
                     const ctx = canvas.getContext("2d");
 
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(
-                        imgLoad,
-                        image.x, image.y, image.width, image.height,
-                        - (image.frameX || 0), - (image.frameY || 0),
-                        image.width, image.height
-                    );
+
+                    if (image.rotated) {
+                        ctx.save();
+                        ctx.translate(canvas.width, 0);
+                        ctx.rotate(Math.PI / 2);
+                        ctx.drawImage(
+                            imgLoad,
+                            image.x, image.y, image.width, image.height,
+                            - (image.frameX || 0), - (image.frameY || 0),
+                            image.width, image.height
+                        );
+                        ctx.restore();
+                    } else {
+                        ctx.drawImage(
+                            imgLoad,
+                            image.x, image.y, image.width, image.height,
+                            - (image.frameX || 0), - (image.frameY || 0),
+                            image.width, image.height
+                        );
+                    }
+
+                    const hashStr = _getPixelHash(canvas, ctx);
+                    if (pixelHashes.has(hashStr)) {
+                        const originalName = pixelHashes.get(hashStr);
+                        skins[image.name] = skins[originalName];
+                        continue;
+                    }
+                    pixelHashes.set(hashStr, image.name);
 
                     const frameImage = new Image();
                     await new Promise((resolve, reject) => {
