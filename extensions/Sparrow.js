@@ -1,9 +1,3 @@
-// Name: Sparrow
-// ID: SkyBuilder1717Sparrow
-// Description: Adds Sparrow V2 Spritesheet support with animations.
-// By: SkyBuilder1717 <https://scratch.mit.edu/users/SkyBuilder1717/>
-// License: MIT
-
 (async function(Scratch) {
     "use strict";
 
