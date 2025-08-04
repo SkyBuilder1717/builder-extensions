@@ -51,7 +51,7 @@ for (let i = 0; i < extensions.length; i++) {
         description.textContent = extension.description;
         menu.appendChild(description);
 
-        xmlHttp.open("GET", `http://79.174.62.204/builder-extensions/downloads/?extension=${extension.id}`, false);
+        xmlHttp.open("GET", `https://skybuilder.primebuildings.bg/builder-extensions/downloads/?extension=${extension.id}`, false);
         xmlHttp.send(null);
         const downloads = document.createElement('p');
         downloads.textContent = xmlHttp.responseText + " Downloads";
@@ -90,7 +90,7 @@ for (let i = 0; i < extensions.length; i++) {
             buttons.appendChild(copyBtn);
             menu.appendChild(buttons);
             document.body.appendChild(menu);
-            xmlHttp.open("GET", `http://79.174.62.204/builder-extensions/download/?extension=${extension.id}`, false);
+            xmlHttp.open("GET", `https://skybuilder.primebuildings.bg/builder-extensions/download/?extension=${extension.id}`, false);
             xmlHttp.send(null);
         }
         copyBtn.appendChild(copy);
