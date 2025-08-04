@@ -38,7 +38,7 @@
         sparrowData.currentFrames[target.getName()] = { frame: frame, name: name, sprite: sprite };
     }
 
-    async function _playAnimation(target, spr, prefix, interval) {
+    async function _playAnimation(target, spr, prefix, fps) {
         if (!target.drawableID) {
             console.error("target.drawableID is empty");
             return;
@@ -87,6 +87,8 @@
             console.error("Frames with", prefix, "not found");
             return;
         }
+
+        const interval = 1000 / fps;
 
         try {
             for (let frameIndex = 0; frameIndex < frameNames.length; frameIndex++) {
@@ -222,6 +224,183 @@
         return { base64: canvas.toDataURL('image/png'), frames: frames };
     }
 
+    async function _playFrameByFrameAnimation(target, spr, framesCsv, fps) {
+        if (!target.drawableID) {
+            console.error("target.drawableID is empty");
+            return;
+        }
+
+        const sprite = _getSprite(spr);
+        if (!sprite || !sprite.frames || sprite.frames.length === 0) {
+            throw new Error("Spritesheet not found");
+            return;
+        }
+
+        const skins = sprite.skins;
+        if (!skins || Object.keys(skins).length === 0) {
+            console.error("Rendered textures are not available");
+            return;
+        }
+
+        const drawable = renderer._allDrawables[target.drawableID];
+        if (!drawable) {
+            console.error("Drawable not found for drawableID:", target.drawableID);
+            return;
+        }
+
+        const timerKey = target.getName();
+
+        if (!sparrowData.animationTimers[timerKey]) {
+            sparrowData.animationTimers[timerKey] = {
+                stopped: false,
+                stopPromise: null,
+                stopResolve: null,
+            };
+        }
+
+        const controller = sparrowData.animationTimers[timerKey];
+        controller.stopped = false;
+
+        controller.stopPromise = new Promise(resolve => {
+            controller.stopResolve = resolve;
+        });
+
+        const requestedFrames = framesCsv.split(",").map(f => f.trim()).filter(f => f.length > 0);
+        if (requestedFrames.length === 0) {
+            console.error("No frames specified");
+            return;
+        }
+
+        const validFrames = requestedFrames.filter(frameName => frameName in skins);
+        if (validFrames.length === 0) {
+            console.error("None of the specified frames exist:", requestedFrames);
+            return;
+        }
+
+        const intervalMs = 1000 / fps;
+
+        try {
+            for (let frameName of validFrames) {
+                if (controller.stopped) {
+                    break;
+                }
+
+                const frameIndex = sprite.frames.findIndex(f => f === frameName);
+
+                if (frameIndex === -1) {
+                    console.warn("Frame not found in sprite.frames:", frameName);
+                    continue;
+                }
+
+                _setFrame(target, skins, frameIndex, frameName, spr);
+
+                await Promise.race([
+                    new Promise(resolve => setTimeout(resolve, intervalMs)),
+                    controller.stopPromise,
+                ]);
+
+                if (controller.stopped) {
+                    break;
+                }
+            }
+        } catch (e) {
+            throw new Error(e.message);
+        }
+
+        delete sparrowData.animationTimers[timerKey];
+    }
+
+    async function _playFrameByIndexAnimation(target, spr, prefix, frameIndicesCsv, fps) {
+        if (!target.drawableID) {
+            console.error("target.drawableID is empty");
+            return;
+        }
+
+        const sprite = _getSprite(spr);
+        if (!sprite || !sprite.frames || sprite.frames.length === 0) {
+            throw new Error("Spritesheet not found");
+            return;
+        }
+
+        const skins = sprite.skins;
+        if (!skins || Object.keys(skins).length === 0) {
+            console.error("Rendered textures are not available");
+            return;
+        }
+
+        const drawable = renderer._allDrawables[target.drawableID];
+        if (!drawable) {
+            console.error("Drawable not found for drawableID:", target.drawableID);
+            return;
+        }
+
+        const timerKey = target.getName();
+
+        if (!sparrowData.animationTimers[timerKey]) {
+            sparrowData.animationTimers[timerKey] = {
+                stopped: false,
+                stopPromise: null,
+                stopResolve: null,
+            };
+        }
+
+        const controller = sparrowData.animationTimers[timerKey];
+        controller.stopped = false;
+
+        controller.stopPromise = new Promise(resolve => {
+            controller.stopResolve = resolve;
+        });
+
+        const frameNames = Object.keys(skins)
+            .filter(name => name.startsWith(prefix))
+            .sort();
+
+        if (frameNames.length === 0) {
+            console.error("Frames with prefix", prefix, "not found");
+            return;
+        }
+
+        const requestedIndices = frameIndicesCsv.split(",")
+            .map(s => parseInt(s.trim(), 10))
+            .filter(i => !isNaN(i) && i >= 0 && i < frameNames.length);
+
+        if (requestedIndices.length === 0) {
+            console.error("No valid frame indices specified");
+            return;
+        }
+
+        const intervalMs = 1000 / fps;
+
+        try {
+            for (let idx of requestedIndices) {
+                if (controller.stopped) {
+                    break;
+                }
+
+                const frameName = frameNames[idx];
+                if (!frameName) {
+                    console.warn("Frame not found at index", idx);
+                    continue;
+                }
+
+                _setFrame(target, skins, idx, frameName, spr);
+
+                await Promise.race([
+                    new Promise(resolve => setTimeout(resolve, intervalMs)),
+                    controller.stopPromise,
+                ]);
+
+                if (controller.stopped) {
+                    break;
+                }
+            }
+        } catch (e) {
+            throw new Error(e.message);
+        }
+
+        delete sparrowData.animationTimers[timerKey];
+    }
+
     function _getPixelHash(canvas, ctx) {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imageData.data;
@@ -296,6 +475,16 @@
                         disableMonitor: true,
                         text: "get frame names as [SPRITENAME]",
                         arguments: { SPRITENAME: { type: Scratch.ArgumentType.STRING, defaultValue: "default" } }
+                    },
+                    {
+                        opcode: "getFrameNamesPrefix",
+                        blockType: Scratch.BlockType.REPORTER,
+                        disableMonitor: true,
+                        text: "get frame names as [SPRITENAME] for animation [PREFIX]",
+                        arguments: {
+                            SPRITENAME: { type: Scratch.ArgumentType.STRING, defaultValue: "default" },
+                            PREFIX: { type: Scratch.ArgumentType.STRING, defaultValue: "" }
+                        }
                     },
                     {
                         opcode: "getFrameCount",
@@ -466,11 +655,32 @@
                     {
                         opcode: "playAnimation",
                         blockType: Scratch.BlockType.COMMAND,
-                        text: "play animation as [SPRITENAME] frames starting with [PREFIX] interval [INTERVAL] ms",
+                        text: "play animation as [SPRITENAME] frames starting with [PREFIX] interval [FPS] fps",
                         arguments: {
                             SPRITENAME: { type: Scratch.ArgumentType.STRING, defaultValue: "default" },
                             PREFIX: { type: Scratch.ArgumentType.STRING, defaultValue: "" },
-                            INTERVAL: { type: Scratch.ArgumentType.NUMBER, defaultValue: 100 }
+                            FPS: { type: Scratch.ArgumentType.NUMBER, defaultValue: 24 }
+                        }
+                    },
+                    {
+                        opcode: "playFrameByFrameAnimation",
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: "play animation as [SPRITENAME] with frames [FRAMES] interval [FPS] fps",
+                        arguments: {
+                            SPRITENAME: { type: Scratch.ArgumentType.STRING, defaultValue: "default" },
+                            FRAMES: { type: Scratch.ArgumentType.STRING, defaultValue: "frame1,frame2,frame3" },
+                            FPS: { type: Scratch.ArgumentType.NUMBER, defaultValue: 24 }
+                        }
+                    },
+                    {
+                        opcode: "playFrameByIndexAnimation",
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: "play animation as [SPRITENAME] frames starting with [PREFIX] only [INDEX] interval [FPS] fps",
+                        arguments: {
+                            SPRITENAME: { type: Scratch.ArgumentType.STRING, defaultValue: "default" },
+                            PREFIX: { type: Scratch.ArgumentType.STRING, defaultValue: "" },
+                            INDEX: { type: Scratch.ArgumentType.STRING, defaultValue: "1,2,3" },
+                            FPS: { type: Scratch.ArgumentType.NUMBER, defaultValue: 24 }
                         }
                     },
                     {
@@ -710,6 +920,16 @@
             return JSON.stringify(spr.frames.map(f => f.name));
         }
 
+        getFrameNamesPrefix(args) {
+            const spr = _getSprite(args.SPRITENAME);
+            if (!spr || !spr.frames) return '[]';
+            let frames = [];
+            for (const frame of spr.frames) {
+                if (frame.name.startsWith(args.PREFIX)) frames.push(frame.name);
+            }
+            return JSON.stringify(frames);
+        }
+
         getFrameCount(args) {
             const spr = _getSprite(args.SPRITENAME.trim());
             if (!spr) return 0;
@@ -720,10 +940,9 @@
             const spr = _getSprite(args.SPRITENAME.trim());
             if (!spr) return 0;
             if (!args.PREFIX) return spr.frames.length;
-            const prefix = args.PREFIX;
             let count = 0;
             for (const frame of spr.frames) {
-                if (frame.name.startsWith(prefix)) count++;
+                if (frame.name.startsWith(args.PREFIX)) count++;
             }
             return count;
         }
@@ -907,7 +1126,28 @@
             const spriteName = args.SPRITENAME.trim();
             const prefix = args.PREFIX.trim();
             if (!spriteName || !prefix) return;
-            await _playAnimation(target, spriteName, prefix, parseInt(args.INTERVAL));
+            await _playAnimation(target, spriteName, prefix, parseInt(args.FPS));
+        }
+
+        async playFrameByFrameAnimation(args, util) {
+            _stopAnimation(util);
+            const target = util.target;
+            if (!target) return;
+            const spriteName = args.SPRITENAME.trim();
+            const frames = args.FRAMES.trim();
+            if (!spriteName || !frames) return;
+            await _playFrameByFrameAnimation(target, spriteName, frames, parseInt(args.FPS));
+        }
+
+        async playFrameByIndexAnimation(args, util) {
+            _stopAnimation(util);
+            const target = util.target;
+            if (!target) return;
+            const spriteName = args.SPRITENAME.trim();
+            const prefix = args.PREFIX.trim();
+            const frames = args.FRAMES.trim();
+            if (!spriteName || !prefix || !frames) return;
+            await _playFrameByIndexAnimation(target, spriteName, prefix, frames, parseInt(args.FPS));
         }
 
         async stopAnimation(_, util) { _stopAnimation(util); }
