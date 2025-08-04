@@ -280,14 +280,14 @@
         const intervalMs = 1000 / fps;
 
         try {
-            for (let frameName of validFrames) {
+            for (let frameIndex = 0; frameIndex < validFrames.length; frameIndex++) {
                 if (controller.stopped) {
                     break;
                 }
 
-                const frameIndex = sprite.frames.findIndex(f => f === frameName);
+                const frameName = validFrames[frameIndex];
 
-                if (frameIndex === -1) {
+                if (!frameName) {
                     console.warn("Frame not found in sprite.frames:", frameName);
                     continue;
                 }
@@ -372,12 +372,13 @@
         const intervalMs = 1000 / fps;
 
         try {
-            for (let idx of requestedIndices) {
+            for (let idx = 0; idx < validFrames.length; idx++) {
                 if (controller.stopped) {
                     break;
                 }
 
                 const frameName = frameNames[idx];
+
                 if (!frameName) {
                     console.warn("Frame not found at index", idx);
                     continue;
