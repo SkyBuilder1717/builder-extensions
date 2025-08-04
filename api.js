@@ -29,6 +29,7 @@ for (let i = 0; i < extensions.length; i++) {
 
     const div = document.createElement('div');
     div.classList.add('extension');
+    div.id = extension.id;
     const openMenuButton = document.createElement('img');
 
     findImage('/static/extensions', extension.id).then(result => {
