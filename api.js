@@ -90,8 +90,7 @@ for (let i = 0; i < extensions.length; i++) {
             buttons.appendChild(copyBtn);
             menu.appendChild(buttons);
             document.body.appendChild(menu);
-            xmlHttp.open("GET", `https://skybuilder.synology.me/builder-extensions/download/?extension=${extension.id}`, false);
-            xmlHttp.send(null);
+            fetch(`https://skybuilder.synology.me/builder-extensions/download/?extension=${extension.id}`);
         }
         copyBtn.appendChild(copy);
         buttons.appendChild(copyBtn);
