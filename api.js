@@ -51,6 +51,12 @@ for (let i = 0; i < extensions.length; i++) {
         description.textContent = extension.description;
         menu.appendChild(description);
 
+        xmlHttp.open("GET", `http://79.174.62.204/builder-extensions/downloads/?extension=${extension.id}`, false);
+        xmlHttp.send(null);
+        const downloads = document.createElement('p');
+        downloads.textContent = xmlHttp.responseText + " Downloads";
+        menu.appendChild(downloads);
+
         const by = document.createElement('p');
         by.textContent = "By ";
         const author = document.createElement('a');
@@ -84,6 +90,8 @@ for (let i = 0; i < extensions.length; i++) {
             buttons.appendChild(copyBtn);
             menu.appendChild(buttons);
             document.body.appendChild(menu);
+            xmlHttp.open("GET", `http://79.174.62.204/builder-extensions/download/?extension=${extension.id}`, false);
+            xmlHttp.send(null);
         }
         copyBtn.appendChild(copy);
         buttons.appendChild(copyBtn);
