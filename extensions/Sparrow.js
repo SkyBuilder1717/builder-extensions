@@ -402,6 +402,100 @@
         delete sparrowData.animationTimers[timerKey];
     }
 
+    async function _playAnimationOffset(target, spr, prefix, frameIndicesCsv, fps, offsetPos) {
+        const originalPos = {x: target.x, y: target.y};
+        if (!target.drawableID) {
+            console.error("target.drawableID is empty");
+            return;
+        }
+
+        const sprite = _getSprite(spr);
+        if (!sprite || !sprite.frames || sprite.frames.length === 0) {
+            throw new Error("Spritesheet not found");
+            return;
+        }
+
+        const skins = sprite.skins;
+        if (!skins || Object.keys(skins).length === 0) {
+            console.error("Rendered textures are not available");
+            return;
+        }
+
+        const drawable = renderer._allDrawables[target.drawableID];
+        if (!drawable) {
+            console.error("Drawable not found for drawableID:", target.drawableID);
+            return;
+        }
+
+        const timerKey = target.getName();
+
+        if (!sparrowData.animationTimers[timerKey]) {
+            sparrowData.animationTimers[timerKey] = {
+                stopped: false,
+                stopPromise: null,
+                stopResolve: null,
+            };
+        }
+
+        const controller = sparrowData.animationTimers[timerKey];
+        controller.stopped = false;
+
+        controller.stopPromise = new Promise(resolve => {
+            controller.stopResolve = resolve;
+        });
+
+        const frameNames = Object.keys(skins)
+            .filter(name => name.startsWith(prefix))
+            .sort();
+
+        if (frameNames.length === 0) {
+            console.error("Frames with prefix", prefix, "not found");
+            return;
+        }
+
+        const requestedIndices = frameIndicesCsv.split(",")
+            .map(s => parseInt(s.trim(), 10))
+            .filter(i => !isNaN(i) && i >= 0 && i < frameNames.length);
+
+        if (requestedIndices.length === 0) {
+            console.error("No valid frame indices specified");
+            return;
+        }
+
+        const intervalMs = 1000 / fps;
+
+        try {
+            for (let idx = 0; idx < validFrames.length; idx++) {
+                if (controller.stopped) {
+                    break;
+                }
+
+                const frameName = frameNames[idx];
+
+                if (!frameName) {
+                    console.warn("Frame not found at index", idx);
+                    continue;
+                }
+
+                _setFrame(target, skins, idx, frameName, spr);
+                target.setXY(originalPos.x + offsetPos.x, originalPos.y + offsetPos.y);
+
+                await Promise.race([
+                    new Promise(resolve => setTimeout(resolve, intervalMs)),
+                    controller.stopPromise,
+                ]);
+
+                if (controller.stopped) {
+                    break;
+                }
+            }
+        } catch (e) {
+            throw new Error(e.message);
+        }
+
+        delete sparrowData.animationTimers[timerKey];
+    }
+
     function _getPixelHash(canvas, ctx) {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imageData.data;
@@ -661,6 +755,18 @@
                             SPRITENAME: { type: Scratch.ArgumentType.STRING, defaultValue: "default" },
                             PREFIX: { type: Scratch.ArgumentType.STRING, defaultValue: "" },
                             FPS: { type: Scratch.ArgumentType.NUMBER, defaultValue: 24 }
+                        }
+                    },
+                    {
+                        opcode: "playAnimationOffset",
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: "play animation as [SPRITENAME] frames starting with [PREFIX] interval [FPS] fps with offset x: [X] y: [Y]",
+                        arguments: {
+                            SPRITENAME: { type: Scratch.ArgumentType.STRING, defaultValue: "default" },
+                            PREFIX: { type: Scratch.ArgumentType.STRING, defaultValue: "" },
+                            FPS: { type: Scratch.ArgumentType.NUMBER, defaultValue: 24 },
+                            X: { type: Scratch.ArgumentType.NUMBER, defaultValue: 0 },
+                            Y: { type: Scratch.ArgumentType.NUMBER, defaultValue: 0 }
                         }
                     },
                     {
@@ -1149,6 +1255,16 @@
             const frames = args.FRAMES.trim();
             if (!spriteName || !prefix || !frames) return;
             await _playFrameByIndexAnimation(target, spriteName, prefix, frames, parseInt(args.FPS));
+        }
+
+        async playAnimationOffset(args, util) {
+            _stopAnimation(util);
+            const target = util.target;
+            if (!target) return;
+            const spriteName = args.SPRITENAME.trim();
+            const prefix = args.PREFIX.trim();
+            if (!spriteName || !prefix) return;
+            await _playAnimationOffset(target, spriteName, prefix, parseInt(args.FPS), {x: parseInt(args.X), y: parseInt(args.Y)});
         }
 
         async stopAnimation(_, util) { _stopAnimation(util); }
