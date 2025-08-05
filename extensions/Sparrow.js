@@ -38,6 +38,86 @@
         sparrowData.currentFrames[target.getName()] = { frame: frame, name: name, sprite: sprite };
     }
 
+    async function _playAnimationOffset(target, spr, prefix, fps, offsetPos) {
+        const originalPos = {x: target.x, y: target.y};
+        if (!target.drawableID) {
+            console.error("target.drawableID is empty");
+            return;
+        }
+
+        const sprite = _getSprite(spr);
+        if (!sprite || !sprite.frames || sprite.frames.length === 0) {
+            throw new Error("Spritesheet not found");
+            return;
+        }
+
+        const skins = sprite.skins;
+        if (!skins || Object.keys(skins).length === 0) {
+            console.error("Rendered textures are not available");
+            return;
+        }
+
+        const drawable = renderer._allDrawables[target.drawableID];
+        if (!drawable) {
+            console.error("Drawable not found for drawableID:", target.drawableID);
+            return;
+        }
+
+        const timerKey = target.getName();
+
+        if (!sparrowData.animationTimers[timerKey]) {
+            sparrowData.animationTimers[timerKey] = {
+                stopped: false,
+                stopPromise: null,
+                stopResolve: null,
+            };
+        }
+
+        const controller = sparrowData.animationTimers[timerKey];
+        controller.stopped = false;
+
+        controller.stopPromise = new Promise(resolve => {
+            controller.stopResolve = resolve;
+        });
+
+        const frameNames = Object.keys(skins)
+            .filter(name => name.startsWith(prefix))
+            .sort();
+
+        if (frameNames.length === 0) {
+            console.error("Frames with", prefix, "not found");
+            return;
+        }
+
+        const interval = 1000 / fps;
+
+        try {
+            for (let frameIndex = 0; frameIndex < frameNames.length; frameIndex++) {
+                if (controller.stopped) {
+                    break;
+                }
+
+                const frameName = frameNames[frameIndex];
+            
+                target.setXY(originalPos.x + offsetPos.x, originalPos.y + offsetPos.y);
+                _setFrame(target, skins, frameIndex, frameName, spr);
+
+                await Promise.race([
+                    new Promise(resolve => setTimeout(resolve, interval)),
+                    controller.stopPromise,
+                ]);
+
+                if (controller.stopped) {
+                    break;
+                }
+            }
+        } catch (e) {
+            throw new Error(e.message);
+        }
+
+        delete sparrowData.animationTimers[timerKey];
+    }
+
     async function _playAnimation(target, spr, prefix, fps) {
         if (!target.drawableID) {
             console.error("target.drawableID is empty");
@@ -385,100 +465,6 @@
                 }
 
                 _setFrame(target, skins, idx, frameName, spr);
-
-                await Promise.race([
-                    new Promise(resolve => setTimeout(resolve, intervalMs)),
-                    controller.stopPromise,
-                ]);
-
-                if (controller.stopped) {
-                    break;
-                }
-            }
-        } catch (e) {
-            throw new Error(e.message);
-        }
-
-        delete sparrowData.animationTimers[timerKey];
-    }
-
-    async function _playAnimationOffset(target, spr, prefix, frameIndicesCsv, fps, offsetPos) {
-        const originalPos = {x: target.x, y: target.y};
-        if (!target.drawableID) {
-            console.error("target.drawableID is empty");
-            return;
-        }
-
-        const sprite = _getSprite(spr);
-        if (!sprite || !sprite.frames || sprite.frames.length === 0) {
-            throw new Error("Spritesheet not found");
-            return;
-        }
-
-        const skins = sprite.skins;
-        if (!skins || Object.keys(skins).length === 0) {
-            console.error("Rendered textures are not available");
-            return;
-        }
-
-        const drawable = renderer._allDrawables[target.drawableID];
-        if (!drawable) {
-            console.error("Drawable not found for drawableID:", target.drawableID);
-            return;
-        }
-
-        const timerKey = target.getName();
-
-        if (!sparrowData.animationTimers[timerKey]) {
-            sparrowData.animationTimers[timerKey] = {
-                stopped: false,
-                stopPromise: null,
-                stopResolve: null,
-            };
-        }
-
-        const controller = sparrowData.animationTimers[timerKey];
-        controller.stopped = false;
-
-        controller.stopPromise = new Promise(resolve => {
-            controller.stopResolve = resolve;
-        });
-
-        const frameNames = Object.keys(skins)
-            .filter(name => name.startsWith(prefix))
-            .sort();
-
-        if (frameNames.length === 0) {
-            console.error("Frames with prefix", prefix, "not found");
-            return;
-        }
-
-        const requestedIndices = frameIndicesCsv.split(",")
-            .map(s => parseInt(s.trim(), 10))
-            .filter(i => !isNaN(i) && i >= 0 && i < frameNames.length);
-
-        if (requestedIndices.length === 0) {
-            console.error("No valid frame indices specified");
-            return;
-        }
-
-        const intervalMs = 1000 / fps;
-
-        try {
-            for (let idx = 0; idx < validFrames.length; idx++) {
-                if (controller.stopped) {
-                    break;
-                }
-
-                const frameName = frameNames[idx];
-
-                if (!frameName) {
-                    console.warn("Frame not found at index", idx);
-                    continue;
-                }
-
-                _setFrame(target, skins, idx, frameName, spr);
-                target.setXY(originalPos.x + offsetPos.x, originalPos.y + offsetPos.y);
 
                 await Promise.race([
                     new Promise(resolve => setTimeout(resolve, intervalMs)),
