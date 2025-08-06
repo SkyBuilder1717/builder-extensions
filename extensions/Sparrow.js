@@ -871,7 +871,6 @@
                             - (image.frameX || 0), - (image.frameY || 0),
                             image.width, image.height
                         );
-                        ctx.restore();
                     } else {
                         canvas.width = frameWidth;
                         canvas.height = frameHeight;
