@@ -855,11 +855,14 @@
                     const frameHeight = image.frameHeight || image.height;
 
                     const canvas = document.createElement("canvas");
+                    canvas.width = frameWidth;
+                    canvas.height = frameHeight;
                     const ctx = canvas.getContext("2d");
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                     if (image.rotated) {
                         ctx.save();
-                        ctx.translate(frameWidth, 0);
                         ctx.rotate(-Math.PI / 2);
                         ctx.drawImage(
                             imgLoad,
