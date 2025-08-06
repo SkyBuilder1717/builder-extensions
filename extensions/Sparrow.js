@@ -788,7 +788,7 @@
                     }
                 ],
                 menus: {
-                    frameProperties: ["x", "y", "width", "height", "frameX", "frameY", "frameWidth", "frameHeight"],
+                    frameProperties: ["x", "y", "width", "height", "frameX", "frameY", "frameWidth", "frameHeight", "rotated"],
                 }
             };
         }
@@ -863,7 +863,7 @@
 
                     if (image.rotated) {
                         ctx.save();
-                        ctx.translate(canvas.width, 0);
+                        ctx.translate(- (image.frameY || 0), image.width + (- (image.frameX || 0)));
                         ctx.rotate(-Math.PI / 2);
                         ctx.drawImage(
                             imgLoad,
@@ -1087,7 +1087,7 @@
             const spr = _getSprite(args.SPRITENAME);
             if (!spr || !spr.frames) return 0;
             const prefix = args.PREFIX;
-            const filteredFrames = spr.frames.filter(name => name.startsWith(prefix));
+            const filteredFrames = spr.frames.filter(frame => frame.name.startsWith(prefix));
             const len = filteredFrames.length;
             if (len === 0) return 0;
             let idx = Math.floor(args.INDEX);
@@ -1141,7 +1141,7 @@
             if (!spr || !spr.frames) return 0;
             const prefix = args.PREFIX;
             const filteredFrames = spr.frames
-                .filter(name => name.startsWith(prefix))
+                .filter(frame => frame.name.startsWith(prefix))
                 .sort();
 
             if (filteredFrames.length === 0) return 0;
@@ -1157,7 +1157,7 @@
             if (!spr || !spr.frames) return 0;
             const prefix = args.PREFIX;
             const filteredFrames = spr.frames
-                .filter(name => name.startsWith(prefix))
+                .filter(frame => frame.name.startsWith(prefix))
                 .sort();
 
             if (filteredFrames.length === 0) return 0;
