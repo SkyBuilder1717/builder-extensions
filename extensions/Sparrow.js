@@ -855,16 +855,16 @@
                     const frameHeight = image.frameHeight || image.height;
 
                     const canvas = document.createElement("canvas");
-                    canvas.width = frameWidth;
-                    canvas.height = frameHeight;
                     const ctx = canvas.getContext("2d");
 
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
                     if (image.rotated) {
+                        canvas.width = frameHeight;
+                        canvas.height = frameWidth;
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
                         ctx.save();
                         ctx.translate(canvas.width, 0);
-                        ctx.rotate(-(Math.PI / 2));
+                        ctx.rotate(-Math.PI / 2);
                         ctx.drawImage(
                             imgLoad,
                             image.x, image.y, image.width, image.height,
@@ -873,6 +873,10 @@
                         );
                         ctx.restore();
                     } else {
+                        canvas.width = frameWidth;
+                        canvas.height = frameHeight;
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
                         ctx.drawImage(
                             imgLoad,
                             image.x, image.y, image.width, image.height,
