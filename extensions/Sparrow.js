@@ -855,33 +855,38 @@
                     const frameHeight = image.frameHeight || image.height;
 
                     const canvas = document.createElement("canvas");
-                    canvas.width = frameWidth;
-                    canvas.height = frameHeight;
                     const ctx = canvas.getContext("2d");
 
-                    // if (image.rotated) {
-                    //     ctx.clearRect(0, 0, canvas.height, canvas.width);
+                    if (image.rotated) {
+                        canvas.width = frameHeight;
+                        canvas.height = frameWidth;
 
-                    //     canvas.width = frameHeight;
-                    //     canvas.height = frameWidth;
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.save();
+                        ctx.translate(canvas.width, 0);
 
-                    //     ctx.rotate(-Math.PI / 2);
-                    //     ctx.drawImage(
-                    //         imgLoad,
-                    //         image.x, image.y, image.width, image.height,
-                    //         - (image.frameX || 0), - (image.frameY || 0),
-                    //         image.width, image.height
-                    //     );
-                    // } else {
-                    //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    // }
+                        ctx.rotate(-Math.PI / 2);
+                        const dx = -(image.frameY || 0);
+                        const dy = -(image.frameX || 0);
+                        ctx.drawImage(
+                            imgLoad,
+                            image.x, image.y, image.width, image.height,
+                            dx, dy,
+                            image.width, image.height
+                        );
+                        ctx.restore();
+                    } else {
+                        canvas.width = frameWidth;
+                        canvas.height = frameHeight;
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    ctx.drawImage(
-                        imgLoad,
-                        image.x, image.y, image.width, image.height,
-                        - (image.frameX || 0), - (image.frameY || 0),
-                        image.width, image.height
-                    );
+                        ctx.drawImage(
+                            imgLoad,
+                            image.x, image.y, image.width, image.height,
+                            - (image.frameX || 0), - (image.frameY || 0),
+                            image.width, image.height
+                        );
+                    }
 
                     const hashStr = _getPixelHash(canvas, ctx);
                     if (pixelHashes.has(hashStr)) {
