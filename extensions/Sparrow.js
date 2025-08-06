@@ -863,10 +863,11 @@
 
                     if (image.rotated) {
                         ctx.save();
+                        ctx.translate(canvas.width, 0);
                         ctx.rotate(-Math.PI / 2);
                         ctx.drawImage(
                             imgLoad,
-                            image.x, 0, image.width, image.height,
+                            image.x, image.y, image.width, image.height,
                             - (image.frameX || 0), - (image.frameY || 0),
                             image.width, image.height
                         );
