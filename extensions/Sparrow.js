@@ -859,20 +859,22 @@
                     canvas.height = frameHeight;
                     const ctx = canvas.getContext("2d");
 
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    // if (image.rotated) {
+                    //     ctx.clearRect(0, 0, canvas.height, canvas.width);
 
-                    if (image.rotated) {
-                        canvas.width = frameHeight;
-                        canvas.height = frameWidth;
+                    //     canvas.width = frameHeight;
+                    //     canvas.height = frameWidth;
 
-                        ctx.rotate(-(Math.PI / 2));
-                        ctx.drawImage(
-                            imgLoad,
-                            image.x, image.y, image.width, image.height,
-                            - (image.frameX || 0), - (image.frameY || 0),
-                            image.width, image.height
-                        );
-                    }
+                    //     ctx.rotate(-Math.PI / 2);
+                    //     ctx.drawImage(
+                    //         imgLoad,
+                    //         image.x, image.y, image.width, image.height,
+                    //         - (image.frameX || 0), - (image.frameY || 0),
+                    //         image.width, image.height
+                    //     );
+                    // } else {
+                    //     ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    // }
 
                     ctx.drawImage(
                         imgLoad,
