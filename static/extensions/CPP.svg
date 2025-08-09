@@ -146,14 +146,14 @@
        ry="0" />
     <text
        xml:space="preserve"
-       style="font-size:30.2474px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000080;fill-opacity:1;stroke:none;stroke-width:25.2062;stroke-linejoin:round"
-       x="158.17599"
-       y="82.639"
+       style="font-size:20.0665px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000080;fill-opacity:1;stroke:none;stroke-width:16.7221;stroke-linejoin:round"
+       x="165.95914"
+       y="78.645851"
        id="text7"><tspan
          sodipodi:role="line"
          id="tspan7"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Bold';fill:#000080;fill-opacity:1;stroke-width:25.2062"
-         x="158.17599"
-         y="82.639">++</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Bold';fill:#000080;fill-opacity:1;stroke-width:16.7221"
+         x="165.95914"
+         y="78.645851">++</tspan></text>
   </g>
 </svg>
