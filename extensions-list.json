@@ -1,4 +1,5 @@
 [
     {"id": "GeometryDashTools", "name": "Geometry Dash Tools", "description": "Adds some utilities to manage Geometry Dash Browser", "author": "SkyBuilder1717", "link": "https://scratch.mit.edu/users/SkyBuilder1717/"},
-    {"id": "Sparrow", "name": "Sparrow", "description": "Adds support for Sparrow V2 spritesheet Adobe Animate export format", "author": "SkyBuilder1717", "link": "https://scratch.mit.edu/users/SkyBuilder1717/"}
+    {"id": "Sparrow", "name": "Sparrow", "description": "Adds support for Sparrow V2 spritesheet Adobe Animate export format", "author": "SkyBuilder1717", "link": "https://scratch.mit.edu/users/SkyBuilder1717/"},
+    {"id": "CPP", "name": "C++", "description": "Adds ability to run C++ code in Scratch", "author": "SkyBuilder1717", "link": "https://scratch.mit.edu/users/SkyBuilder1717/"}
 ]
